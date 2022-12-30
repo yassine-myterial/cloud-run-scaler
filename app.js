@@ -34,6 +34,8 @@ app.post('/', (req, res) => {
   }
   
   const pubSubMessage = req.body.message;
+  console.log(pubSubMessage);
+  
   const name = pubSubMessage.data
     ? Buffer.from(pubSubMessage.data, 'base64').toString().trim()
     : 'World';
