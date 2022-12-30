@@ -45,7 +45,7 @@ app.post('/', (req, res) => {
   console.log('Starting scaling');
   execSync(gcloudCmd).toString(); 
   gcloudCmd =
-      `gcloud run services update myterial-middleware --no-cpu-throttling --region=europe-west3 --project "${PROJECT_ID} `;
+      `gcloud run services update myterial-middleware --no-cpu-throttling --region=europe-west3 --project "${PROJECT_ID}" `;
   execSync(gcloudCmd).toString(); 
   console.log('Scaling completed.');
   console.log(`Hello ${name}!`);
