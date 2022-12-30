@@ -8,6 +8,9 @@ const express = require('express');
 const app = express();
 const {execSync} = require('child_process');
 
+let {KEY_FILE_PATH} = process.env;
+let {PROJECT_ID} = process.env;
+
 // This middleware is available in Express v4.16.0 onwards
 app.use(express.json());
 // [END run_pubsub_server_setup]
