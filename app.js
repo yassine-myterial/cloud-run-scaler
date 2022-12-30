@@ -18,42 +18,48 @@ app.use(express.json());
 
 // [START cloudrun_pubsub_handler]
 // [START run_pubsub_handler]
-app.post('/', (req, res) => {
-  if (!req.body) {
-    const msg = 'no Pub/Sub message received';
-    console.error(`error: ${msg}`);
-    res.status(400).send(`Bad Request: ${msg}`);
-    return;
-  }
-  
-  if (!req.body.message) {
-    const msg = 'invalid Pub/Sub message format';
-    console.error(`error: ${msg}`);
-    res.status(400).send(`Bad Request: ${msg}`);
-    return;
-  }
-  
-  const pubSubMessage = req.body.message;
-  console.log(pubSubMessage);
-  
-  const name = pubSubMessage.data
-    ? Buffer.from(pubSubMessage.data, 'base64').toString().trim()
-    : 'World';
-  
-  let gcloudCmd =
-      `gcloud auth activate-service-account myterial-pipeline-user@myterial-dev.iam.gserviceaccount.com ` +
-      `--key-file="${KEY_FILE_PATH}" `;
-      
-  console.log('Starting scaling');
-  execSync(gcloudCmd).toString(); 
-  gcloudCmd =
-      `gcloud run services update myterial-middleware --no-cpu-throttling --region=europe-west3 --project "${PROJECT_ID}" `;
-  execSync(gcloudCmd).toString(); 
-  console.log('Scaling completed.');
-  console.log(`Hello ${name}!`);
-  res.status(204).send();
-});
+try{
+  app.post('/', (req, res) => {
+    if (!req.body) {
+      const msg = 'no Pub/Sub message received';
+      console.error(`error: ${msg}`);
+      res.status(400).send(`Bad Request: ${msg}`);
+      return;
+    }
+
+    if (!req.body.message) {
+      const msg = 'invalid Pub/Sub message format';
+      console.error(`error: ${msg}`);
+      res.status(400).send(`Bad Request: ${msg}`);
+      return;
+    }
+
+    const message = req.body.message;
+    const cpuThrotting= message.cpuThrotting? '--cpu-throttling'? '--no-cpu-throttling';
+    console.log(message);
+
+    let gcloudCmd =
+        `gcloud auth activate-service-account myterial-pipeline-user@myterial-dev.iam.gserviceaccount.com ` +
+        `--key-file="${KEY_FILE_PATH}" `;
+
+    console.log('Starting scaling');
+    execSync(gcloudCmd).toString(); 
+    gcloudCmd =
+        `gcloud run services update ${message.service} ` +
+        `--concurrency=${message.scaling.concurrency} ` +
+        `--min-instances=${message.scaling.from} ` +
+        `--max-instances=${message.scaling.to} ` +
+        `${cpuThrotting} ` +
+        `--region=europe-west3  ` +
+        `--project "${message.projectId}" `;
+    execSync(gcloudCmd).toString(); 
+    console.log('Scaling completed.');
+    console.log(`Hello ${name}!`);
+    res.status(204).send();
+  });
 // [END run_pubsub_handler]
 // [END cloudrun_pubsub_handler]
-
+}catch(error){
+  console.log(error);
+}
 module.exports = app;
