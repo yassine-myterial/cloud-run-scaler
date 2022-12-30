@@ -34,14 +34,16 @@ app.post('/', (req, res) => {
   const name = pubSubMessage.data
     ? Buffer.from(pubSubMessage.data, 'base64').toString().trim()
     : 'World';
-  /*
+  
   let gcloudCmd =
       `gcloud auth activate-service-account myterial-pipeline-user@myterial-dev.iam.gserviceaccount.com ` +
       `--key-file="${KEY_FILE_PATH}" `;
-      */
-  let gcloudCmd ="gcloud version";
+      
   console.log('Starting scaling');
-  execSync(gcloudCmd, {timeout: 10 * 1000}); // timeout at 4 mins
+  execSync(gcloudCmd).toString(); 
+  gcloudCmd =
+      `gcloud run services update myterial-middleware --no-cpu-throttling --region=europe-west3 --project "${PROJECT_ID} `;
+  execSync(gcloudCmd).toString(); 
   console.log('Scaling completed.');
   console.log(`Hello ${name}!`);
   res.status(204).send();
