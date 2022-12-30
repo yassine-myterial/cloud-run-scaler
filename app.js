@@ -35,7 +35,7 @@ try{
     }
 
     const message = req.body.message;
-    const cpuThrotting= message.cpuThrotting? '--cpu-throttling'? '--no-cpu-throttling';
+    const cpuThrotting= message.cpuThrotting? '--cpu-throttling': '--no-cpu-throttling';
     console.log(message);
 
     let gcloudCmd =
