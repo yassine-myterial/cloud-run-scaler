@@ -24,7 +24,7 @@ try{
       return;
     }
 
-    if (!Array.isArray(req.body) {
+    if (!Array.isArray(req.body)) {
       const msg = 'invalid config format';
       console.error(`error: ${msg}`);
       res.status(400).send(`Bad Request: ${msg}`);
