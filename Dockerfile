@@ -9,6 +9,15 @@
 # https://hub.docker.com/_/node
 FROM node:18-slim
 
+#install google cloud SDK
+RUN apk add --update \
+ python \
+ curl \
+ which \
+ bash
+RUN curl https://sdk.cloud.google.com > install.sh
+RUN bash install.sh --disable-prompts
+
 # Create and change to the app directory.
 WORKDIR /usr/src/app
 
