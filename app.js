@@ -54,7 +54,6 @@ try{
         `--project "${message.projectId}" `;
     execSync(gcloudCmd).toString(); 
     console.log('Scaling completed.');
-    console.log(`Hello ${name}!`);
     res.status(204).send();
   });
 // [END run_pubsub_handler]
