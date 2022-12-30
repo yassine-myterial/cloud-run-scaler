@@ -11,7 +11,7 @@ FROM node:18-alpine
 
 #install google cloud SDK
 RUN apk add --update \
- python \
+ python2 \
  curl \
  which \
  bash
