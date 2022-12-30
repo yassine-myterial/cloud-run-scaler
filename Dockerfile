@@ -5,18 +5,31 @@
 # [START cloudrun_pubsub_dockerfile]
 # [START run_pubsub_dockerfile]
 
-# Use the official lightweight Node.js 12 image.
+# Use the official  image.
 # https://hub.docker.com/_/node
-FROM node:18-alpine
+FROM google/cloud-sdk
 
-#install google cloud SDK
-RUN apk add --update \
- python3 \
- curl \
- which \
- bash
-RUN curl https://sdk.cloud.google.com > install.sh
-RUN bash install.sh --disable-prompts
+#install node js
+# Install node and npm:
+ENV NODE_VERSION 18.12.1
+
+RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
+  && case "${dpkgArch##*-}" in \
+    amd64) ARCH='x64';; \
+    ppc64el) ARCH='ppc64le';; \
+    s390x) ARCH='s390x';; \
+    arm64) ARCH='arm64';; \
+    armhf) ARCH='armv7l';; \
+    i386) ARCH='x86';; \
+    *) echo "unsupported architecture"; exit 1 ;; \
+  esac \
+  && curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH.tar.xz" \
+  && tar -xJf "node-v$NODE_VERSION-linux-$ARCH.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
+  && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" \
+  && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
+  # smoke tests
+  && node --version \
+  && npm --version
 
 # Create and change to the app directory.
 WORKDIR /usr/src/app
